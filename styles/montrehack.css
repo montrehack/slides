@@ -1,3 +1,9 @@
+/*
+ * Blending http://montrehack.ca in slidy css
+ *
+ * known issues:
+ *   - invisible text in ToC
+ */
 body {
   margin: 0;
   padding: 0;
@@ -5,10 +11,6 @@ body {
   color: #eaeaea;
   line-height: 1.5;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0 0 20px;
 }
 
 li {
@@ -60,8 +62,9 @@ ul li:before {
    a, a:hover, a:visited
 */
 
-a {
+a, a:hover, a:visited, a:link {
   color: #63c0f5;
+  text-decoration: underline;
   text-shadow: 0 0 5px rgba(104, 182, 255, 0.5);
 }
 
@@ -74,7 +77,8 @@ a {
 }
 /* readable prompt */
 div.initial_prompt {
-  color: #eaeaea;
+  opacity: 0.85;
+  color: #000;
 }
 
 /* The following were untested and will probably need some adjustment */
