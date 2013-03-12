@@ -1,0 +1,93 @@
+MontréHack March / Mars
+=======================
+// Author: Olivier Bilodeau
+:copyright: CC0 unless specified otherwise
+:backend: slidy
+:max-width: 45em
+// unfortunately the following doesn't work
+//:stylesheet: {docdir}/styles/montrehack.css
+// the following will inline images in HTML (causing significantly larger
+// filesizes)
+:icons:
+:data-uri:
+
+Ce soir
+-------
+
+Description du problème
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Pour ce mois ci, la cible sera un site web de pâtissiers mafieux (Anonymousse). Votre objectif découvrir des informations secrètes sur cette organisation. La tâche ne sera pas aisée. Les développeurs de l'extranet ont fait usage d'une multitude de mécanismes cryptographiques. Sécurité ou obscurité?
+
+* Ces niveaux ont été présentés au Hackfest 2012.
+* Niveau de difficulté: Facile
+
+Outils nécessaires
+~~~~~~~~~~~~~~~~~~
+
+* Subgraph Vega ou tout autre proxy HTTP
+* Langage de scriptage (Python, Ruby ou autre)
+* Papier et crayon
+
+Connaissances requises
+~~~~~~~~~~~~~~~~~~~~~~
+* Compréhension de base des "stream ciphers" et "block ciphers"
+
+Présenté par Philippe Arteau.
+
+Tonight
+-------
+
+Problem Description
+~~~~~~~~~~~~~~~~~~~
+
+This month, our target will be the website of a mafia baker (Anonymousse). Your objective is to discover secret informations related to this organization. The task will not be easy. The developpers of their extranet have used many cryptographic mechanism to secure their infrastructure. Security of obscurity?
+
+* These levels have been presented at Hackfest 2012.
+* Difficulty level: Easy
+
+Required Tools
+~~~~~~~~~~~~~~
+
+* Subgraph Vega or any other HTTP proxy
+* Your favorite scripting language (Python, Ruby, etc.)
+* Pen and paper
+
+Required knowledge
+~~~~~~~~~~~~~~~~~~
+
+* Basic understanding of stream and block ciphers
+
+Presented by Philippe Arteau.
+
+Plugs
+-----
+
+image::res/13-03/nsec.png[NorthSec logo]
+
+Compétition de sécurité appliquée
+
+Applied security competition
+
+* http://nsec.io
+* 5 au 7 avril, à Montréal
+* Ancien HackUS
+* Web, Binary, Crypto, Network, Reverse Java
+* Hacker Jeopardy ouvert au public samedi soir
+
+
+À vos shells!
+-------------
+
+Instructions
+~~~~~~~~~~~~
+
+TODO
+
+Social
+~~~~~~
+
+* IRC: irc://irc.freenode.net/montrehack (client web: http://webchat.freenode.net)
+* Twitter: @montrehack
+* http://montrehack.ca
+
