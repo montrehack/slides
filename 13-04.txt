@@ -1,0 +1,74 @@
+MontréHack Avril / April 
+========================
+// Author: Olivier Bilodeau
+:copyright: CC0 unless specified otherwise
+:backend: slidy
+:max-width: 45em
+// unfortunately the following doesn't work
+//:stylesheet: {docdir}/styles/montrehack.css
+// the following will inline images in HTML (causing significantly larger
+// filesizes)
+:icons:
+:data-uri:
+
+
+Ce soir / Tonight
+-----------------
+
+iOS Forensics
+~~~~~~~~~~~~~
+
+* par François Proulx
+
+Network forensics with packet carving
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* par Olivier Bilodeau (défi fait par Guillaume Germain)
+
+*These levels have been presented at NorthSec 2013 hosted in Montreal.*
+
+
+Plugs
+-----
+
+image::res/bsides-qc.png[BSides Qc logo]
+
+Qu'est-ce que BSides?
+ 
+BSidesQuebec est un évènement de sécurité créé par et pour les membres de la communauté de la sécurité de l'information. L'objectif est de rassembler les gens et d'élargir le spectre de la conversation au-delà des limites traditionnelles d’espace et de temps. Il crée des opportunités pour ceux voulant à la fois présenter ou participer à l'évènement dans une atmosphère relaxe qui encourage la collaboration. 
+
+Bienvenue à BSides. Participez. Partagez.
+  
+* Date: Vendredi 31 mai au samedi 1 juin 2013
+* Endroit: Musée de la civilisation et sur Ustream
+* Thème: « Je vous répondrai par la bouche de mes canons ! »
+* Coûts: Gratuit! (comme toujours!)
+* Inscriptions: http://bsidesquebec2013.eventbrite.ca/
+
+
+À vos shells!
+-------------
+
+Instructions
+~~~~~~~~~~~~
+
+Network
+^^^^^^^
+
+PAS DE SCAN AUTOMATISÉS SUR LE POINT D'ACCÈS
+
+* Access-point: SSID montrehack / passphrase montrehack
+* Instructions: http://montrehack.ca/
+
+iOS Forensics
+^^^^^^^^^^^^^
+
+* Instructions: http://montrehack.ca/
+
+Social
+~~~~~~
+
+* IRC: irc://irc.freenode.net/montrehack (client web: http://webchat.freenode.net)
+* Twitter: @montrehack
+* http://montrehack.ca
+
