@@ -1,0 +1,51 @@
+The following was obtained from our mole working for the national police...
+
+===========================
+===========================
+===========================
+
+Police forensics case GHB-2345453763-2239982
+=============================================
+
+As an mobile forensics expert, you've been asked to contribute to a securities fraud investigation of the Major Fraud division of the state police. You need to help the agents to build a case against Raymond Tusk, the Chief Financial Officer of OnionOtar LLC. Mr Tusk is suspected to take part in illegal insider tradings where he and his crime partners are using non-public material information regarding high margin tradings on the stock market.
+
+Here are some basic informations regarding to suspect:
+
+Raymond Tusk personal informations:
+* Born on April 5th 1949 in Bridgeport, West Virginia
+* CFO at OnionOtar since May 2005
+* Married to Sally Rosenberg
+* Linked In profile: http://www.linkedin.com/pub/raymond-tusk/65/b94/bb5
+* Facebook profile: https://www.facebook.com/raymond.tusk
+* Twitter profile: https://twitter.com/raymondtusk
+
+Forensics expert notes:
+- We have used the official toolset to extract from the suspect's iPhone 4 device
+  - http://code.google.com/p/iphone-dataprotection/
+1. The device was imaged byte-for-byte (using dd) without leaving any trace (RAMDISK injection technique)
+2. The pin / passcode was bruteforced when physically connected to the device (pin was 1234)
+3. The keybag was exported
+4. Sparse image was compressed from 16 GB down to 512 MB
+TODO: We did not have time to decrypt the keychain, but we have already extracted all we needed from the target's physical device
+
+The prosecutor asked you to answer the following forensics questions:
+(All latitude / longitude to be provided in decimal format: for instance 42.335567,-77.234345)
+
+1. What is Raymond's cellphone number (international format) ?
+2. What is Raymond's GMail account and its password (e-mail/password) ? 
+3. What is Raymond's iPhone IMEI (International Mobile Equipment Identifier) ?
+4. Where and when is Raymond supposed to meet his mistress ? What's her name ? (MISTRESS_NAME/NUMERIC_ROOM_NUMBER/24_HOUR_FORMAT_TIME)
+5. What is the name of the coding alphabet that the criminals use when refering to their actions? Our sources think it might be a very old phonetic alphabet from the US Army (YEAR_FIRSTWORD_SECONDWORD)
+5. Apart from Raymond, give the full name of all his partners in crime (3 persons). (FirstName1_LastName1+FirstName2_LastName2+FirstName3_LastName3    in  alphabetical order)
+6. Give the probable code name they will use to refer to their next scheduled status meeting (given that all four criminals will attend, sort them in alphabetic order)
+7. Give the name and postal code of the first two secret locations 
+(use the format LocationCodeName1_FirstPartOfPostalCode+LocationCodeName2_FirstPartOfPostalCode)
+8. Give the name and exact coordinates of the third and last secret location (LocationCodeName1_latitude_longitude)
+9. What is the stock symbol that was the target of their latest illegal insider trading?
+10. What is the UPC code of Raymond's favorite booze, the name of the product + GPS location of where he typically buys this booze 
+(format: 0123456_BoozeBrandName_latitude_longitude) 
+11. It looks like our criminals are planning on meeting abroad. Find the cryptographic signature (512 bits) of boarding pass for the flight landing in their secret location.
+12. Give the bank account information they are using the transfer money to their offshore account 
+(use the format: BANKID_BRANCHID_ACCOUNTNUMBER)
+13. We suspect that Raymond and his team have been contracted by a stocks trading company to create a custom iPhone application to store material information on stock trading. Try extracting the most valuable secret information stored by this app.
+
