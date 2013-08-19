@@ -72,7 +72,7 @@ a, a:hover, a:visited, a:link {
  * overriding slidy's
  */
 /* forcing color */
-.slide ul > li > * {
+.slide ul > li > *, .slide tt {
   color: #eaeaea;
 }
 /* readable prompt */
