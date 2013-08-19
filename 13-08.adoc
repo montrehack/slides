@@ -1,0 +1,51 @@
+MontréHack Août / August
+========================
+// Author: Olivier Bilodeau
+:copyright: CC0 unless specified otherwise
+:backend: slidy
+:max-width: 45em
+// unfortunately the following doesn't work
+//:stylesheet: {docdir}/styles/montrehack.css
+// the following will inline images in HTML (causing significantly larger
+// filesizes)
+:icons:
+:data-uri:
+
+== Ce soir / Tonight
+
+=== Web4kids
+
+Web and Trivia problems for beginners and intermediates
+
+Theses exercises were part of the challenge Web4kids held at NorthSec 2013.
+It is composed of fourteen (14) challenges that will lead the participant
+to understand the basics of Web security weaknesses and practice the usage
+of diverse tools.
+
+* présenté a NorthSec 2013
+* par Jonathan Marcil en collaboration avec OWASP Montreal
+
+== Plugs
+
+image::res/nsec.png[NorthSec logo]
+
+* http://nsec.io/
+
+image::res/owasp.png[OWASP logo]
+
+* https://www.owasp.org/index.php/Montréal
+
+== À vos shells!
+
+=== Instructions
+
+See Jonathan's slides.
+
+=== Social
+
+* IRC: irc://irc.freenode.net/montrehack (client web: http://webchat.freenode.net)
+* Twitter: @montrehack
+* Mailing list: http://groups.google.com/group/montrehack/
+* We are also on G+, facebook, linkedin...
+* http://montrehack.ca
+
