@@ -63,7 +63,7 @@ Presented by Philippe Arteau.
 Plugs
 -----
 
-image::res/13-03/nsec.png[NorthSec logo]
+image::res/nsec.png[NorthSec logo]
 
 Compétition de sécurité appliquée
 
