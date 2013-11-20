@@ -52,7 +52,7 @@ and so we decided to start training together
 
 == montrehack --version
 
-* 5 editions so far
+* 8 editions so far
 * Covering: Crypto, Unix exploitation, iOS forensics, networking, Web, some more crypto and binary
 * We are not better at CTF yet :(
 
@@ -60,7 +60,7 @@ and so we decided to start training together
 
 * Very little organisation
 * Mostly on mailing lists: montrehack and now montrehack-meta
-* I harass people to submit stuff
+* We harass people to submit stuff
 
 == $you: we need your help!
 
@@ -69,6 +69,14 @@ and so we decided to start training together
 * Help manage our communities
 * Subscribe on montrehack-meta and offer help
 * TODO: logistics, planning, promo, logo, better organise content, etc.
+
+== Next month
+
+Silkstreet
+
+* Challenge category: Exploitation
+* Présenté a CSAW13 Finals
+* challenge d'exploitation classique mais dans un binaire x86
 
 == Stay in touch
 
