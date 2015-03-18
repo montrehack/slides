@@ -1,10 +1,20 @@
 # MontreHack slides
 
-## Pre-reqs
+Sources of some of the slides presented during montrehack
+
+## new toolchain
+
+Check the Makefile for self-explanatory documentation
+
+## old toolchain
+
+Previous slides were built with asciidoc + slidy
+
+### Pre-reqs
 
 Install [asciidoc](http://www.methods.co.nz/asciidoc/) for your platform
 
-## Rendering documents
+### Rendering documents
 
     $ asciidoc --attribute stylesheet=`pwd`/styles/montrehack.css \
             -o presentation.html <file>

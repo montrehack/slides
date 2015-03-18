@@ -1,0 +1,6 @@
+[submodule "15-03-16-password-checker/asciidoctor-reveal.js"]
+	path = 15-03-16-password-checker/asciidoctor-reveal.js
+	url = https://github.com/asciidoctor/asciidoctor-reveal.js.git
+[submodule "15-03-16-password-checker/reveal.js"]
+	path = 15-03-16-password-checker/reveal.js
+	url = https://github.com/hakimel/reveal.js.git

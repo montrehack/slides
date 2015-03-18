@@ -1,0 +1,323 @@
+= password-checker
+:author: Olivier Bilodeau
+// asciidoctor config
+:imagesdir: images
+:source-highlighter: highlightjs
+// reveal.js config
+:backend: revealjs
+:revealjs_controls: false
+:revealjs_center: true
+// history is useful when designing
+:revealjs_history: true
+:revealjs_transition: none
+:revealjs_backgroundTransition: slide
+
+== password-checker
+
+* Grab the binary: http://montrehack.ca
+* First hint in 30 minutes
+
+== Hint #1
+
+[%step]
+* It's a Perl interpreter 
++
+----
+$ strings -a password-checker
+----
++
+* The flag must be hidden inside
+* But there is a *lot* of code
+* `B::Deparse` can decompile Perl's internal compiled structures
+* Next hint in 30 minutes
+
+== Hint #2
+
+[%step]
+* Looks like ELF produced by `perlcc` (google hint)
+* You got `B::Decode` running right?
+* If we could load a binary compatible environment, maybe `B::Deparse` would
+  work better?
+* How is this thing deployed?
+* Perl 5.8.9 is end-of-life since 2008 :(
+* plenv
+
+== Hint #3
+
+[%step]
+* plenv is setup right?
+* you have the exact perl version? 32-bit? i686-linux-multi/ is there?
+* You need a 32-bit linux VM. http://www.vagrantbox.es/ is easiest for quick
+  setup
+* `plenv install 5.8.9 -Dusemultiplicity`
+* Some of the usual `B::Deparse` tricks don't work
+* Think of `eval`-ing perl code in the right context
+* Last hint in 30 minutes
+
+== Hint $last
+
+[%step]
+You got that `eval` thing working, right?
+
+----
+(gdb) b perl_run
+Breakpoint 1 at 0x80fc5ea: file perl.c, line 2350.
+(gdb) r
+Starting program: /home/olivier/Documents/projets/infosec/adctf2014/15/password-checker·
+
+Breakpoint 1, perl_run (my_perl=0x81d0008) at perl.c:2350
+2350    perl.c: No such file or directory.
+(gdb) p Perl_eval_pv (my_perl, "use B::Deparse; B::Deparse->compile->()", 1)
+----
+
+Warnings:
+
+* be careful of output buffering, add a `die("flush")` to flush the buffers
+* backslashes need to be escaped (gdb eats them)
+
+== Hint $last (cont.)
+
+Think introspection. Like python's
+
+[source,python]
+----
+import __main__ as i
+dir(i)
+----
+
+Of course I won't tell you perl's equivalent ;)
+
+== Solution
+
+== How I saw myself
+
+image:hacker.jpg[]
+
+== How it really happened
+
+image:no-idea.jpg[]
+
+== First, B::Deparse
+
+B::Deparse is *the* thing to reverse perl code.
+
+Trying to add B::Deparse to my PERL5OPT environment variable to force it to dump its code
+
+----
+$ export PERL5OPT=-MO=Deparse
+$ ./password-checker
+-e syntax OK
+----
+
+This usually work but it didn't work here.
+
+== How can I bypass this check?
+
+[%step]
+* gdb and break later? but break where?
+* listing calls under main
++
+----
+...
+0x080a9e6d    e8aa9afbff   call sym.imp.exit
+0x080a9e79    e8a2b50b00   call sym.Perl_Gcurinterp_ptr
+0x080a9e83    e800030000   call sym.dl_init
+0x080a9e90    e84b270500   call sym.perl_run
+0x080a9ea1    e87a540500   call sym.perl_destruct
+0x080a9eae    e84d540500   call sym.perl_free
+...
+----
+* perl_run stands out as a good spot
+* and it's documented here: http://stackoverflow.com/a/4048916
+
+== Eval'ing code
+
+Use `eval` to load `B::Deparse` and dump optree
+
+----
+gdb-peda$ b perl_run
+Breakpoint 1 at 0x80fc5ea: file perl.c, line 2350.
+
+gdb-peda$ r
+Breakpoint 1, perl_run (my_perl=0x81d0008) at perl.c:2350
+2350    perl.c: No such file or directory.
+
+gdb-peda$ p Perl_eval_pv (my_perl, "use B::Deparse; B::Deparse->compile->()", 1)
+package �[w;
+use warnings;
+use strict 'refs';
+print 'password: ';
+While deparsing� near line 5,
+at /home/vagrant/.plenv/versions/5.8.9/lib/perl5/5.8.9/i686-linux-multi/B/Deparse.pm line 1223
+    B::Deparse::gv_name('B::Deparse=HASH(0x83935bc)', 'B::SPECIAL=SCALAR(0x83e96d8)') called at /home/vagrant/.plenv/versions/5.8.9/lib/perl5/5.8.9/i686-linux-multi/B/Deparse.pm line 2842
+[...]
+    eval 'use B::Deparse; B::Deparse->compile->()
+;' called at (eval 1) line 0
+[Inferior 1 (process 21239) exited with code 041]
+The program being debugged exited while in a function called from GDB.
+Evaluation of the expression containing the function
+(Perl_eval_pv) will be abandoned.
+----
+
+== What happened?
+
+`B::Deparse` relies on C code we need to have a binary compatible module ready to load.
+
+== The right environment
+
+* based on strings in the binary:
++
+    /home/vagrant/.plenv/versions/5.8.9/lib/perl5/5.8.9/i686-linux-multi/
++
+* 32-bit plenv Perl built with `-Dusemultiplicity` (builds the native code with
+multiple interpreter per process support)
+
+== Setup a VM
+
+Since vagrant is all over the place, lets leverage it by doing the same thing.
+(and I love fancy devops tools)
+
+* vagrant up (an old CentOS 32-bit box)
+* yum install git gdb
+* install plenv (git clone two repos)
+* install Perl 5.8.9 with binary compatibility with `password-checker`
+
+    ~/.plenv/bin/plenv install 5.8.9 -Dusemultiplicity
+
+* vagrant ssh
+
+== Getting B::Deparse right
+
+If you used `vagrant` + `plenv` you don't need to mangle with PERL5LIB since
+all the files will be at the expected place.
+
+----
+(gdb) p Perl_eval_pv (my_perl, "use B::Deparse; B::Deparse->compile->()", 1)
+use warnings;
+use strict 'refs';
+print 'password: ';
+<ARGV>;
+print "wrong\n";
+my(@c) = ('"', '`', '!', '$', '#', '{', '/', '&', '_', '^', '.', '[', '(',
+            '*', ')', '+', '%', ',', '\\', ']', '-', '', ':', '=', ';', '|');
+$1 = (SV *) 0x83dfde0
+----
+
+Still no flag...
+
+== $introspection
+
+Lets eval funky stuff
+
+[source,perl]
+----
+local $, = '\n'; print %main::;
+----
+
+Lists all top-level symbols.
+
+== Results
+
+    ...
+    flag
+    *main::flag
+    ...
+
+== found flag
+
+There's a flag symbol but I can't print it...
+
+[source,perl]
+----
+print $flag;
+----
+
+or
+
+[source,perl]
+----
+print $main::flag;
+----
+
+Yields nothing.
+
+== So what is it exactly?
+
+[source,perl]
+----
+{
+    no strict;
+    local $, = '\n';
+    print 'its a scalar (or a ref)' if defined($flag);
+    print 'its an array' if defined(@flag);
+    print 'its a hash' if defined(%flag);
+    print 'its code' if defined(&flag);
+    die('flush buffers');
+}
+----
+
+----
+(gdb) p Perl_eval_pv (my_perl, "{ no strict; local $, = '\n'; print 'its a scalar (or a ref)' if defined($flag); print 'its an array' if defined(@flag); print 'its a hash' if defined(%flag); print 'its code' if defined(&flag); die('flush buffers'); }", 1)
+----
+
+Turns out its code...
+
+== Dump it
+
+`B::Deparse` to the rescue!
+
+[source,perl]
+----
+use B::Deparse;
+$deparse = B::Deparse->new();
+print $deparse->coderef2text(*main::flag{CODE});
+----
+
+`*main::flag{CODE}` is a fancy way of saying `\&flag` (reference to `flag()`)
+without a backslash
+
+----
+(gdb) p Perl_eval_pv (my_perl, "use B::Deparse; $deparse = B::Deparse->new(); print $deparse->coderef2text(*main::flag{CODE});", 1)
+----
+
+== Result
+
+[source,perl]
+----
+{
+use warnings;
+use strict 'refs';
+die "^_^\n";
+print eval eval $c[0] . $c[12] . $c[18] . $c[3] . ($c[1] | $c[4]) . $c[11]
+                . ($c[9] ^ ($c[1] | $c[6])) . $c[19] . $c[9] . $c[18] .
+                $c[3] . ($c[1] | $c[4]) . $c[11] . ($c[9] ^ ($c[1] |
+                $c[17])) . $c[19] . $c[14] . $c[10] . $c[12] . $c[12] .
+[...]
+}
+----
+
+* Array operations seems to hold our flag
+* Behind the `die()` so it's never reached
+* We saw this `c` array before...
+
+== Finish him
+
+* Take `@c` definition from main scope
+* Add the `print eval eval` code
+* Run it
+* $FLAG
+
+== Thanks!
+
+Any questions?
+
+== References
+
+* http://adctf2014.katsudon.org/, Day 15
+* http://stackoverflow.com/a/4048916
+* https://metacpan.org/pod/B::Deparse
+* https://www.vagrantup.com/
+* https://github.com/tokuhirom/plenv
+* https://github.com/tokuhirom/perl-build
+* `perldoc perlmod`: The main:: special package
+* `perldoc perlref`: Typeglobs and references
