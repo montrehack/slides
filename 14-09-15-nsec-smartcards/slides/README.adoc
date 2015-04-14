@@ -1,0 +1,4 @@
+Slides
+
+* http://montrehack.ca/archives/14-09-nsec-smartcards/[Content]
+* https://github.com/montrehack/montrehack.github.com/blob/master/archives/14-09-nsec-smartcards/index.html[Source]

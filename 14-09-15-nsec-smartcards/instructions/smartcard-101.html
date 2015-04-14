@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<title>Smart Cards 101</title>
+
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="index.html"><img src="chip_lock_cheesy.png"></a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li><a href="index.html">The ANO Card</a></li>
+          <li class="active"><a href="smartcard-101.html">Smart Card 101</a></li>
+          <li><a href="track-instructions.html">Track Instructions</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<br>
+<!-- Done using strapdownjs.com (markdown->bootstrap)  that's right, fuck HTML, real men use Markdown.-->
+<xmp theme="bootstrap" style="display:none;">
+
+
+#Smart Cards 101
+----
+
+Welcome to the wonderful world of Smart Cards, where everything is hex and bytes don't matter :)
+
+**DISCLAIMER:**
+IF YOU ALREADY KNOW SMART CARDS, READING WHAT FOLLOWS WILL CERTAINLY OFFEND YOU SINCE I'M TAKING MASSIVE SHORTCUTS IN MY DESCRIPTIONS, THEREBY SOMEWHAT FREELY DIVERTING FROM ISO-7816.
+IF YOU'RE STILL BEING PEDANTIC ABOUT ISO-7816 AND ITS RESPECT, PLEASE EXPLAIN ISO-7816-7. MY POINT EXACTLY.
+
+
+## Ok so how does it all work ? 
+
+A Smart Card is nothing more than a basic CPU able to process given bytes received serially on the I/O contact (one of the metal connectors that you can see on the chip, C7 to be precise).
+
+I hear you asking already: this is very nice, but how do I get the precious flags and collect those sweet, sweet points ? 
+
+Well, not so fast : past experiences have shown us that **if you do not know anything about Smart Cards and launch head first into the challenges, you will spend _lots_ of time goofing around and actually not doing anything constructive**.
+You should really take 5 minutes of your time to read the following text, providing you with a quick overview of the basics of how you can interact with them.
+
+
+## So, how does one communicate with the card ?
+
+First, you need to know how communicating and reading the card response works.
+
+
+Smart cards are made in such a way that if you do not send them a command, they will not send you data on their own.
+
+
+So basically it's the following scenario with the classic "actors" being the Terminal (the reader connected to your computer) and the Card :
+
+
+    Terminal ----Command1----> Card
+
+    Terminal <---Response1---- Card
+
+    Terminal ----Command2----> Card
+
+    Terminal <---Response2---- Card
+
+    Terminal ----Command3----> Card
+
+    Terminal <---Response3---- Card
+
+	...
+
+Before being able to talk to the card, once inserted in the reader, depending on the toolset you're using, it might be needed to send a special command, namely reset, for which the card
+will give the **ATR** (Answer To Reset).
+
+This is a special command that does not look like the rest and does not need to be explicitely sent to the card most of the time. 
+You should find out if your tool requires a specific Reset before being able to communicate with the card since some data returned in the ATR could contain some valuable information.
+
+Once you have successfully made a reset you are assured that the card is present and accessible in the reader. But nothing more.
+
+---
+
+You would then need to send it other commands, which are regular Applicative commands, that are sexily named Application Protocol Data Unit (**APDU**, pronounced A,P,D,U not ap-duh, duh !).
+
+For each APDU sent to the card by the terminal, the card will give an answer that could be data, an error message, a success message, or a combination of those.
+
+Return error/success message are known as Status Words (**SW**).
+
+
+A standard communication would thus look like this :
+
+
+    Terminal ----APDU----> Card
+	Terminal <--DATA+SW--- Card
+
+or
+
+	Terminal ----APDU----> Card
+	Terminal <---SW------- Card
+
+
+## So, what do APDUs and SWs look like ?
+
+Since everything is sent "serially", everything you will see will look like a stream of hexadecimal bytes :
+
+
+	Terminal --AABBCCDDEE--> Card
+	Terminal <--DDEEFF0123-- Card
+
+But wait ? Can I just send and receive _anything_ ? Well theoretically YES, but there are some restrictions and specifications to follow... A.K.A. SPECS, DO YOU READ THEM ?
+
+## So what does a valid APDU look like ?
+
+APDUS have the following exceptionnally clear syntax ('XX' as a pair of double characters denotes a byte, in hexadecimal)
+
+	  ___CLA
+	 |   ___INS
+	 |  |   ____P1
+	 |  |  |   ____P2
+	 |  |  |  |   ___Lc
+	 |  |  |  |  |   ____Data
+	 |  |  |  |  |  |     
+	XX XX XX XX XX XXXXXX... there are some other parameters you could use but won't be used in the event
+
+Obviously to be sent w/o spaces...
+
+**`CLA`** : Class of the command: The categorization of the command, not useful for this event, it "generally" categorizes command with two usual values, 
+'00' for industry-standard command and '80' for proprietary commands. The event will not necessarily respect this.
+
+**`INS`** : The instruction of the command : This is one of the most important byte of the command sent to the card, it's the actual instruction that the card will act upon (i.e. what to do).
+
+**`P1`**  : The Fist Parameter : The parameters for the Instruction whenever it needs one (or '00' otherwise), it can be used to call a specific use of the INS for instance, or anything else.
+
+**`P2`** : The Second Parameter : See `P1`.
+
+**`Lc`** : The length of the Data that follows.
+
+**`Data`** : The Data to send to the card (also in hex), this is optional and not needed if `Lc='00'`.
+
+Except for the Data, all those bytes are mandatory to send (otherwise the card won't be able to identify which is which).
+
+
+## So what do Status Words look like ?
+
+There are actually _two_ status words, namely `SW1` and `SW2`, returned by the card for every command. They can be very explicative so you should take care of them.
+
+They will look like this :
+
+	  _SW1
+	 |   _SW2
+	 |  |
+	XX XX
+
+There are two main families of Status Words, `SUCCESS` status words (which actually is always the same) and `ERROR` status word, which differs depending on the type of error.
+
+Here are the SW1SW2 :
+
+- `SUCCESS`	: '9000'
+- `ERROR` 	: '6xxx' (Could be '6985', '6601', etc.) Each code means something different, they will be documented during the event.
+
+##### Special Error Status words
+
+In some cases, the data returned by the response is too long to fit in a single buffer frame. In that case the card will answer the maximum amount of bytes it can, and add a special `61XX` return code where `XX` is the amount of bytes left to be read.
+
+Some terminals automatically do the request on your behalf for the remaining bytes, but it might be necessary to do it *manually* by issuing a `GET RESPONSE` command asking for the remaining bytes.
+
+---
+
+## Example, using the command SELECT
+
+What's the use of the command `SELECT`? This is a **very important** command, it allows you to select a specific application context : 
+If you send commands to the wrong application it won't be able to understand them and reply you back, you therefore have to send the right command to the right application.
+`SELECT` allows you to switch between application context on the card.
+Some cards have a default application already pre-selected, so you might already be in a specific context upon card insertion (Following the ATR, see previously).
+
+The command `SELECT` has the following APDU : 
+
+	  ___CLA
+	 |   ___INS
+	 |  |   ____P1
+	 |  |  |   ____P2
+	 |  |  |  |   ___Lc
+	 |  |  |  |  |   ____Data
+	 |  |  |  |  |  |     
+	00 A4 04 00 XX YYYYYYY...
+>Where XX is the length of YYYYYYY and YYYYYYY is the application name context to SELECT.
+
+So for instance if I wanted to select the **ANOBAR1** application, I would need to send the following command :
+
+	00 A4 04 00 07 414E4F42415231
+	               A N O B A R 1 (Following the ASCII Table).
+
+Looking like this as a flow :
+
+	Terminal --00A4040007414E4F42415231--> Card
+	Terminal <----------9000-------------- Card (No specific message, select command worked)
+
+Or  :
+
+	Terminal --00A4040007414E4F42415231--> Card
+	Terminal <---ABCDEF00112233449000----- Card (Some application data returned after select)
+
+Or  :
+
+	Terminal --00A4040007414E4F42415231--> Card 
+	Terminal <----------6A82-------------- Card (File Not Found, i.e. no such application found)
+	
+Or  :
+
+	Terminal --00A4040007414E4F42415231--> Card
+	Terminal <---ABCDEF00112233446109----- Card (Data returned too long, '09' bytes remaining)
+	Terminal ---------00C0000009---------> Card
+	Terminal <--0102030405060708099000---- Card
+
+etc.
+
+##### You have to be very careful of the return of the `SELECT` command, some cards might return `9000` for any `SELECT` command even if the selected context does not exist.
+##### You would only be able to know you've selected the right context by looking at the returned value from `SELECT` or by sending other commands to the application and see if they work.
+
+---
+
+##For additionnal ISO-7816 reference, check online :
+
+[http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_6_basic_interindustry_commands.aspx](http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_6_basic_interindustry_commands.aspx)
+
+All Reponses :
+
+[http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_5_basic_organizations.aspx](http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_5_basic_organizations.aspx) see Table 12
+
+---
+
+##Tools (very basic but will get you around) :
+
+Something **very important** to consider during the event : Smart cards are **minimal** hence tooling is **minimal**. Interacting with the card is a pain in itself, don't add to it by using a tool you do not fully understand and with which you are not **completely** at ease.
+
+#####Readers under Linux :
+
+In order to have a functional reader, you might need to install `pcscd` and `pcsc-tools` using your favorite package manager. Use Google if you need further help.
+
+####GPShell (Text-based script SmartCard Interaction) : 
+
+[http://sourceforge.net/projects/globalplatform/files/](http://sourceforge.net/projects/globalplatform/files/)
+
+[https://launchpad.net/~k-o-/+archive/globalplatform](https://launchpad.net/~k-o-/+archive/globalplatform) (for Ubuntu, you can take the 11.10 version)
+
+####Smart Card Shell (JavaScript-based SmartCard Interaction) :
+
+[http://www.openscdp.org/scsh3/](http://www.openscdp.org/scsh3/)
+
+####Python tools :
+
+[http://pyscard.sourceforge.net/](http://pyscard.sourceforge.net/)
+
+####Perl tools :
+
+[http://search.cpan.org/~whom/pcsc-perl-1.4.10/PCSC.pod](http://search.cpan.org/~whom/pcsc-perl-1.4.10/PCSC.pod)
+
+[http://ludovic.rousseau.free.fr/softwares/pcsc-perl/](http://ludovic.rousseau.free.fr/softwares/pcsc-perl/)
+
+####Java tools:
+
+[http://docs.oracle.com/javase/7/docs/jre/api/security/smartcardio/spec/index.html?javax/smartcardio/package-summary.html](http://docs.oracle.com/javase/7/docs/jre/api/security/smartcardio/spec/index.html?javax/smartcardio/package-summary.html)
+
+####Other useful links :
+
+[http://askubuntu.com/questions/645/how-do-you-reset-a-usb-device-from-the-command-line](http://askubuntu.com/questions/645/how-do-you-reset-a-usb-device-from-the-command-line)
+
+[http://ludovicrousseau.blogspot.ca/](http://ludovicrousseau.blogspot.ca/)
+
+
+###If for whatever reason the card breaks down or is in an unusable state, try removing it from the reader first, then try again. If it still is unusable, come see an admin.
+</xmp>
+
+<script src="strapdown.js"></script>
+</html>

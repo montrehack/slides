@@ -1,0 +1,2 @@
+Self-contained. These can be downloaded and viewed offline by opening the
+index.html file.

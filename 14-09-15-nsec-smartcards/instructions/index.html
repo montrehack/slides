@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<title>Smart Cards 101</title>
+
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="index.html#"><img src="chip_lock_cheesy.png"></a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li class="active"><a href="index.html">The ANO Card</a></li>
+          <li><a href="smartcard-101.html">Smart Card 101</a></li>
+          <li><a href="track-instructions.html">Track Instructions</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+<br>
+<!-- Done using strapdownjs.com (markdown->bootstrap) that's right, fuck HTML, real men use Markdown.-->
+<xmp theme="bootstrap" style="display:none;"> 
+#Welcome !
+
+----
+
+As a new employee of the A.N.O. (Associated Nations Organization), your employee card has already been **dead dropped** by one of our agents directly at your current location. You should be able to locate it very easily by carefully inspecting your work environment.
+
+This card will be your one of the most valuable tool during your whole career as a faithful employee.
+
+It serves many purposes, as a way of showing our commitment to openness and adhering to Kerchkoffs's principle we are able to share a maximum of information with you, described hereafter. 
+
+In the following text, 'XX' as a pair of double characters denotes a byte, in hexadecimal. Anything between single quotes is actually hex and not pre-pended by "0x".
+
+## The Employee Crypto-Storage HSM
+----
+
+Your ANO Card is mostly used as a crypto-storage HSM, very useful during all of your daily operations. It already contains a wide array of keys highly-secured inside the chip.
+
+Everything happens in the specially crafted application, aptly named `ANOHSM1`. This is the default selected application on the chip.
+
+Keys inside the chip are stored in a triple-layer-security-ring-wtf-bbq-layout :
+
+- The User Buffer Keys
+- The Internal Keys
+- The System Keys
+
+Upon selection of the application, you also will receive your Card Serial Number (`CSN`).
+
+### The User Buffer Keys (UK & PDK)
+
+----
+
+There are two (2) keys stored in the User Buffer, but you can only read one, the other being highly secured and masked when reading the User Buffer.
+
+The only key you should *normally* be able to read is the User Key (`UK`).
+
+The other key you should not *normally* be able to read is the Protected Derived Key (`PDK`).
+
+Identification (ID) and Access Controls (AC) on those keys are also present in the buffer returned, and will be presented as follows :
+
+
+	XX XX YYYY... XX XX ZZZZ...
+	ID AC UK      ID AC PDK
+
+**Key ID** is fixed and should not be changed, `UK` is '01' and `PDK` is '02'.
+
+**Access Controls** are in place and the description is as follows shall demonstrate why tke `PDK` is not readable :
+
+| b8 | b7 | b6 | b5 | b4 | b3 | b2 | b1 | Description |
+| -- | -- | -- | -- | -- | -- | -- | -- | ------------|
+| X  |    |    |    |    |    |    |    |    RFU      |
+|    | X  |    |    |    |    |    |    |    RFU      |
+|    |    |  X |    |    |    |    |    |    **Hidden 1 / 0 Readeable**   |
+|    |    |    |  X |    |    |    |    |    RFU      |
+|    |    |    |    |  X |    |    |    |    RFU      |
+|    |    |    |    |    |  X |    |    |    RFU      |
+|    |    |    |    |    |    |  X |    |    RFU      |
+|    |    |    |    |    |    |    |  X |    RFU      |
+
+
+`RFU` : Reserved for Future Use (value doesn't matter).
+
+As a convenience, you can also use the User Key as a personnal key storage, beware though, there are a couple of caveats :
+
+- Data sent for storage has to be **PKCS5** padded.
+- You can only safely store **16** bytes of Data, **32** bytes is only *experimental* at this stage.
+
+
+##### Commands to interact with the User Buffer
+
+######READ BUFFER
+
+```
+00 80 00 00 00
+```
+
+######STORE USER KEY
+
+```
+00 84 01 00 Lc <PKCD5-Padded-User-Key>
+```
+
+######ERROR RESPONSES
+
+| SW1SW2        | Description           |
+| ------------- | --------------------- |
+| `6D00`			| Wrong Command         |
+| `6700` 			| Wrong length in command for Data sent        |
+| `6601` 			| Data Length invalid for command         |
+| `6603` 			| User Key padding error         |
+| `6604` 			| Wrong Key ID for storage         |
+| `6699`			| Generic Error (should not happen)        |
+
+
+### The Internal Keys
+
+----
+
+Next up the key hierarchy of your Employee Card are the Internal Keys, there are two (2) internal keys, the Derived Card Key (`DCK`) and the Migration Export Key (`MEK`).
+
+Those keys are **never** directly accessible in cleartext through a buffer as with the previous keys, but there are special mechanisms in place to retreive some of them ciphered under a specific key set.
+
+#### The Derived (Internal) Card Key (DCK)
+
+In order to export the Derived Card Key, there exists a command that outputs it ciphered under the *ever-so-secure* RSA algorithm wrapped with an unaccessible 2048b key that has been pre-loaded in the card.
+
+Getting the wrapped `DCK` should be very fast since the exponent for the RSA algorithm has been carefully set at '03' with minimal padding for optimum performance.
+
+##### Commands to interact with the DCK
+
+######GET DCK
+
+```
+00 85 00 00 00
+```
+
+######ERROR RESPONSES
+
+| SW1SW2        | Description           |
+| ------------- | --------------------- |
+| `6D00`			| Wrong Command         |
+| `6700` 			| Wrong length in command for Data sent        |
+| `6601` 			| Data Length invalid for command         |
+
+
+#### The Migration Export Key (MEK)
+
+This key does not actually exist in the card, but it is of utmost importance in order to export a key higher up in the hierarchy, namely a System Key, the Mother Card Key (`MCK`).
+
+The `MEK` has to be assembled by key custodians and loaded into the card in two distinct parts, after which it will allow the **ciphered** `MCK` to be output under the `MEK`.
+
+The key will *not* be output if the parts are not the right ones, only the right parts will fit in an *extremely* complex and **strong** cryptosystem described as follows (it's so secure we have no problem sharing it with you) :
+
+- Let the Check Value (`CV`): `414E4F44454641554C544B4559534554`.
+
+- Let `ENC(X,Y)` be the 3DES_EDE2_ECB (TDEA Double Length Key in Electronic Codebook Mode for the Old-timers around) encryption function using Key X and Data Y.
+
+- Let `KP1` be the first key part for the first key custodian to import.
+
+- Let `KP2` be the second key part for the second key custodian to import.
+
+- Let `ENC2(X,Y)` be the AES_128_CBC encryption function using Key X and Data Y.
+
+```
+IF((ENC(KP1,ENC(CSN^CV,ENC(KP2,ENC(CSN^CV^KP1,CV)))) == CV) { 
+	MEK := KP1^KP2
+	OUTPUT(ENC2(MEK,MCK))
+} ELSE { ERROR }
+```
+
+As you can see, the double-double-encryption makes it pretty **strong**.
+
+##### Commands to interact with the MEK
+
+######MIGRATE MOTHER CARD KEY
+
+```
+00 83 XX 00 10 YYYYYY... (Where XX = Key Block 01 or 02 and YYY.. = Key Block Data)
+```
+
+######ERROR RESPONSES
+
+| SW1SW2        | Description           |
+| ------------- | --------------------- |
+| `6D00`			| Wrong Command         |
+| `6700` 			| Wrong length in command for Data sent        |
+| `6601` 			| Data Length invalid for command         |
+| `6610` 			| Key Block already entered         |
+| `6611` 			| `MEK` Key algorithm failed (Wrong `CV`)         |
+
+
+### The System Keys
+----
+
+Your Employee Card also contains three (3) System Keys, the Master Key (`MK`) the Original Key (`OK`) and one you should already know about by now, the Mother Card Key (`MCK`).
+
+#### The Original key (OK)
+
+This is the last key that can be exported wrapped under the RSA algorithm. The card will dynamically generate a different RSA key every time (based on our precision-crafted DRBG) and output the `OK` under that newly-generated key.
+
+Since it is dynamically generated, in order to enhance security a strong exponent value of '010001' has been selected.
+
+So that it can fit with the whole cryptosystem, the `OK` is also 16 Bytes in length.
+
+##### Commands to interact with the MEK
+
+######GENERATE NEW RANDOM KEY
+```
+00 81 00 00 00
+```
+
+######EXPORT `OK` UNDER KEY
+```
+00 82 00 00 00
+```
+
+######ERROR RESPONSES
+
+| SW1SW2        | Description           |
+| ------------- | --------------------- |
+| `6D00`			| Wrong Command         |
+| `6700` 			| Wrong length in command for Data sent        |
+| `6601` 			| Data Length invalid for command         |
+| `6985` 			| Conditions of use not satisfied.        |
+
+#### The Master Key (MK)
+
+There is now way one can export the `MK` since it is the original key used to derive some of the others, using the following relashionship:
+
+- Let `ENC2(X,Y)` be the AES_128_CBC encryption function using Key X and Data Y.
+
+```
+DCK := ENC2(MCK,MK^OK)
+PDK := ENC2(DCK,MK^OK)
+```
+
+## The Employee Expense Card
+----
+
+This is the other feature of your Employee Card.
+
+As an Employee of the A.N.O. you get to expense some of your consumptions in *** approved concessions *** during special events.
+
+Only *** approved concession *** will posess the right key to be able to add the expense to your card using a very strong cryptosystem.
+
+We can tell you that it's actually based on the `MK` and ENC2.
+
+Your card has plenty of room to account for expenses, but should you reach the maximum (set to 'FFFF'), the card can be reset by the right department (phone number will be provided later).
+
+Cryptosystem :
+
+```
+Terminal ----00A4040007414E4F42415231----> Card
+Terminal <-------XXXXXX...9000------------ Card
+	.
+	.
+	.
+Some crypto
+operation
+where XXXX...
+becomes YYYY...
+	.
+	.
+	.
+Terminal ------0089000010YYYYYYYY...-----> Card
+
+Terminal <------------ZZZZ9000------------ Card (expense counter value incremented)
+or
+Terminal <----------------6666------------ Card (expense counter maxed out)
+
+```
+
+######ERROR RESPONSES
+
+| SW1SW2        | Description           |
+| ------------- | --------------------- |
+| `6666`			| Expense Counter Maxed Out         |
+
+
+## We wish you a pleasant and faithful career in the great A.N.O. family !
+
+</xmp>
+
+<script src="strapdown.js"></script>
+</html>

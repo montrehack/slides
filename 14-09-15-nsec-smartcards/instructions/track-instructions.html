@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<title>Smart Cards 101</title>
+
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="index.html"><img src="chip_lock_cheesy.png"></a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li><a href="index.html">The ANO Card</a></li>
+          <li><a href="smartcard-101.html">Smart Card 101</a></li>
+          <li class="active"><a href="track-instructions.html">Track Instructions</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+<br>
+<!-- Done using strapdownjs.com (markdown->bootstrap)  that's right, fuck HTML, real men use Markdown.-->
+<xmp theme="bootstrap" style="display:none;">
+
+# Track instructions
+-----
+
+You need to find 11 flags (not in that particular order but some might depend on others...) :
+
+
+- The Card OS version.
+- The Card Serial Number (CSN). ** NOT the CSN in the CPLC / KEYDATA / Card Manager etc.**.
+- The Protected Derived Key (PDK).
+- The First Migration Export Key Part (KP1).
+- The Second Migration Export Key Part (KP2).
+- The Mother Card Key (MCK).
+- The Derived Card Key (DCK).
+- The Original Key (OK).
+- The Master Key (MK).
+- The Expense Count Reset Phone Number.
+
+- The Visual Flag Printed On The Card.
+
+A couple of advices :
+
+- Some flags are easy to find, some take commitment. Don't give up.
+- Hex streams can be PITA, take your time to double-check what you read.
+
+I honestly hope you have at least as much fun (and suffering) as I did, designing and implementing the whole track.
+
+</xmp>
+
+<script src="strapdown.js"></script>
+</html>
