@@ -1,0 +1,518 @@
+= Two Years of Montrehack
+:author: Olivier Bilodeau
+// asciidoctor config
+:imagesdir: images
+:source-highlighter: highlightjs
+// reveal.js config
+:backend: revealjs
+:revealjs_controls: false
+:revealjs_center: true
+// history is useful when designing
+:revealjs_history: true
+:revealjs_transition: none
+:revealjs_backgroundTransition: slide
+// title slides
+:title-slide-background-image: cover.jpg
+:title-slide-background-size: cover
+// shorthands
+:title: data-background="#657b83"
+:notes: NOTE.speaker
+:cover: data-background-size=cover
+:contain: data-background-size=contain
+
+////
+== Abstract submitted
+
+Montréhack is a monthly workshop where every attendee participates in solving
+real Capture-The-Flag (CTF) exercises. Solutions to the problems are presented
+at the end of the meeting and participants discusses additional tips, tools
+and approaches to the problem.
+
+This talk will cover why we started Montréhack, how it works and where we want
+to take it. We will highlight some of the challenges we presented and share
+some lessons, tools and techniques we’ve learned that are applicable no matter
+the challenge at hand.
+
+Please note that for the lulz, some of our mistakes will be revealed.
+
+20 minutes
+////
+
+== Plan
+
+* What
+* Why
+* How (When, Where, Who)
+* Lessons
+* Tools and techniques
+* What's next?
+
+[data-background-image=images/bio.jpg,{contain}]
+== !
+
+== $ whoami
+
+Malware Researcher at ESET
+
+Passionate about infosec and open source
+
+Did https://eset.github.io/slides/[many]
+http://obilodeau.github.io/slides/[talks], much lulz and luv for the community
+
+Father of two
+
+[.small]
+https://twitter.com/obilodeau[@obilodeau]
+
+[{notes}]
+which is a sponsor
+
+== shamelessplug
+
+// TODO, what time?
+Hacker Jeopardy Saturday at `$something` pm
+
+[{notes}]
+I write the questions and run the show. much fun
+
+[{title}]
+== What
+
+== !
+
+Monthly workshop where we work on solving "Capture-the-Flag"* challenges
+
+http://montrehack.ca
+
+[.small]
+*: infosec stuff not counter strike
+
+[{notes}]
+Thankfully because of Guillaume's presentation I know I don't need
+to explain CTF
+
+== !
+
+Archives of past challenges on our Website
+
+[{notes}]
+====
+Most of them includes files to redo the challenges and solution (homemade
+or write-up)
+
+In fact we can go back up to the 70s'
+====
+
+[data-background-image=images/70s.jpg]
+== !
+
+[data-background-image=images/archives.png,{contain}]
+== !
+
+[{notes}]
+and also by topic
+
+== !
+
+Android, Crackme, Cryptography, Exploit, Forensic, Hardware, IOS, Linux,
+Network, Reverse-Engineering, SQL Injection, Steganography and Web
+
+== !
+
+Covered International and Local CTFs
+
+Advent Calendar CTF, Boston Key Party, CySCA, CSAW, Hackfest, NorthSec, PlaidCTF, Hack.lu
+
+== !
+
+We feature some of the Web's gems in order to present our challenges
+
+[data-background-image=images/meme-1.jpg, {contain}]
+== !
+
+[data-background-image=images/meme-2.jpg, {contain}]
+== !
+
+[data-background-image=images/meme-3.png, {contain}]
+== !
+
+[data-background-image=images/meme-4.jpg, {contain}]
+== !
+
+[data-background-image=images/meme-5.png, {contain}]
+== !
+
+[data-background-image=images/meme-6.png, {contain}]
+== !
+
+[data-background-image=images/meme-7.png, {contain}]
+== !
+
+[data-background-image=images/meme-8.png, {contain}]
+== !
+
+[data-background-image=images/meme-9.png, {contain}]
+== !
+
+== !
+
+But montrehack is also...
+
+[data-background-image=images/famous-joan.jpg, {contain}]
+== !
+
+a place to meet celebrities
+
+[{notes}]
+like the upcoming speaker
+
+[{title}]
+== Why
+
+== !
+
+Be better at CTF
+
+== !
+
+Because we sucked at Defcon Quals
+
+[data-background-image=images/scoreboard.png, {contain}]
+== !
+
+[{notes}]
+Primarily add depth to the team
+
+== !
+
+We didn't really succeeded at that
+
+[{notes}]
+I'm old, I have kids, I don't know as much CTFs
+
+== !
+
+In fact its more about *routine* and *doing*
+
+[.small]
+True story bro
+
+[{notes}]
+====
+* routine: No matter what, I spend at least 3 hours a month on CTFs
+  (and then beer with friends).
+* doing: no talks where you hear other people do stuff, you do the stuff and
+  your machine is always ready to go to war
+====
+
+[{title}]
+== How
+
+== !
+
+Someone proposes a challenge
+
+We work on it
+
+He presents his solution after 3 hours
+
+[.small]
+We go for beer after
+
+[{notes}]
+but sometimes, like last week, we just go straight to the beer
+
+== !
+
+Participants must bring laptops
+
+Hack in ad-hoc teams
+
+[.small]
+Make friends (optional)
+
+== When
+
+3rd Monday of every month*
+
+[.small]
+*: certain restrictions apply, see website for details
+
+== Where
+
+Notman house, UQAM or Google offices
+
+[.small]
+then Benelux
+
+== Who
+
+Pierre-Marc Bureau, Sebastien Duquette, Marc-Etienne M.Leveillé and myself
+
+[{notes}]
+====
+stand-up guys
+
+new management model where we assign ourselves specific months and do
+everything mostly alone
+====
+
+[data-background-image=images/pride.jpg, {contain}]
+== Shout-outs
+
+== !
+
+Alexandre Rimthong for the montrehack name
+
+Past presenters: Taher Azab, Xavier Garceau-Aranda, Pierre-Marc Bureau,
+Marc-Etienne M.Leveillé, Charles F.Hamilton, Philippe Arteau, Pierre-David
+Oriol, Marc-André Labonté, Sébastien Lorrain, Mathieu Lavoie, Benjamin
+Vanheuverzwijn, Sébastien Duquette, Gabriel Tremblay, Jonathan Marcil, Laurent
+Desaulniers, François Proulx and myself
+
+== A Few Awards Should Go To
+
+== !
+
+Most montrehack attended without actually working on the challenges
+
+[data-background-image=images/initnull.jpg, {contain}]
+== !
+
+Our very own NorthSec President *Mr Gabriel Tremblay*
+
+== !
+
+Longest challenge explanation
+
+[.small]
+Going 3x over allocated timeslot
+
+[data-background-image=images/proulx.jpg]
+== !
+
+NorthSec's Logistics VP *Mr. François Proulx*
+
+[.small]
+His challenge and explanation was good though
+
+== !
+
+Making us secretly exploit a 0-day vulnerability in some library
+
+[data-background-image=images/arteau.jpg]
+== !
+
+NorthSec's challenge maker Philippe Arteau
+
+On an XXE injection in Apache Batik (CVE-2015-0250)
+
+[{title}]
+== Lessons
+
+== Lesson #0
+
+Co-maintainership doesn't work
+
+[{notes}]
+====
+having core volunteers and expecting them to spread the load (one does fb,
+other email and website, etc.) didn't work
+
+when we embraced one pre-assigned guy per months things started to go way
+better (less late announcements, etc.)
+====
+
+== Lesson #1
+
+We accidentally offended several communities
+
+We're sorry
+
+[{notes}]
+can't really give more details because it might offend others but just keep
+this in mind when doing social events
+
+== Lesson #2
+
+It takes time
+
+[data-background-image=images/timespent.png, {contain}]
+== !
+
+[{notes}]
+as you can see making those funny pictures can take a while
+
+== Lesson #3
+
+Having checkpoints along a complex challenge is a good thing
+
+[{notes}]
+We stop to provide hints to make sure no one is stalled. People tend to
+regroup at these stages and still make progress.
+
+[{title}]
+== Tools and techniques
+
+== !
+
+There are no single tools or techniques
+
+[.small]
+The END
+
+[{notes}]
+joking aside, people tend to use various tools, he are what I decided to
+highlight (I don't speak on behalf of others)
+
+== !
+
+Learn a scripting language
+
+Accumulate snippets of codes and re-use them, expand them over time
+
+[{notes}]
+wait for it
+
+== !
+
+but preferably python3
+
+== !
+
+Use ipython and ipython notebook
+
+[{notes}]
+if you've never used notebook, you GOT to give it a try
+
+== !
+
+No plain gdb
+
+fancy `.gdbinit` or
+https://github.com/crowell/p3da[p3da]
+
+== !
+
+From time to time try https://github.com/radare/radare2[radare2] instead of
+a pirated IDA Pro
+
+[{notes}]
+Its getting there. I presented a full crackme type challenge using it.
+
+== !
+
+Wireshark is da bomb and learn tshark
+
+[.small]
+Especially `-T fields -e data` and then some piping into python with `fileinput`
+module for further processing.
+
+== !
+
+Web: Burp or Owasp ZAP
+
+[{notes}]
+Its been a while since I've done web so these might not be the best
+
+== !
+
+Use `vagrant` for disposable VMs
+
+== !
+
+Learn to use a powerful text-editor like `vim`, `sublime` or `emacs`
+
+Preferably `vim`
+
+== !
+
+Learn to use the developers tools of your browser
+
+[{notes}]
+Most of the modern web challenges can be done that way. The 'copy as curl'
+chrome command is awesome
+
+[{title}]
+== What's next?
+
+== !
+
+Sponsored by the Benelux for a free beer after the workshop
+
+image:benelux.png[]
+
+[{notes}]
+expect round of applause. We are really glad about this
+
+== !
+
+No breaks this summer
+
+== !
+
+Next month we get a Googler from Seattle
+
+Defcon Quals 2015 challenge: wibbly wobbly timey wimey
+
+[{notes}]
+====
+* yet to be confirmed, subject to change
+* and then what's next is that you'll participate!
+====
+
+[{title}]
+== Participate!
+
+== !
+
+We want you to come to montrehack
+
+== !
+
+We want you to
+https://github.com/montrehack/montrehack.github.com/wiki/Present-at-Montrehack[present]
+at montrehack!
+
+== !
+
+We want you to
+https://github.com/montrehack/montrehack.github.com/wiki/Sponsorships-at-Montrehack[sponsor] montrehack!
+
+Best way: present or create a challenge!
+
+[{notes}]
+it could be hosted at your office too!
+
+== !
+
+* Mailing list: https://groups.google.com/forum/#!forum/montrehack
+* Twitter: https://twitter.com/montrehack
+* Other places: facebook, google+
+* Getting involved: https://groups.google.com/forum/#!forum/montrehack-meta
+
+[{notes}]
+We have an open mailing list for organization so you can subscribe and stalk
+if you want to be more involved
+
+== !
+
+You can easily
+https://github.com/montrehack/montrehack.github.com/pull/10[contribute] and
+participate
+
+[{notes}]
+demo, just look how easy
+
+// [{title}]
+[data-background-image=images/tshirt.jpg]
+== Questions?
+
+Thanks for your time!
+
+https://twitter.com/montrehack[@montrehack],
+https://twitter.com/obilodeau[@obilodeau]
+
+[{notes}]
+switch to crowd pictures then ask how many speakers where in the pictures?
+mathieu, zhenya, joan, moi, coincidence ;)
